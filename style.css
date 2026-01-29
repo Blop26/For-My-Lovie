@@ -1,40 +1,60 @@
+/* 1. GLOBAL STYLES & SCROLLING */
 body {
-    background-color: #ffeef2;
+    background: linear-gradient(135deg, #ffeef2 0%, #ffdeeb 100%);
     font-family: 'Arial', sans-serif;
     margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow-x: hidden; /* Important: prevents scrollbars when button leaves screen */
+    /* Changed to auto so you can actually scroll when content is long */
+    overflow-y: auto; 
+    overflow-x: hidden;
+    position: relative;
 }
 
+/* 2. THE MAIN CARD (CONTAINER) */
 .container {
     background: white;
-    padding: 40px;
+    padding: 30px;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     text-align: center;
     width: 90%;
-    max-width: 450px;
+    max-width: 400px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centers items inside the card */
+    align-items: center;
+    /* Removed min-height so it shrinks on the first page */
+    height: auto;
+    margin: 40px auto; 
+    animation: fadeIn 0.8s ease-in, float 3s ease-in-out infinite;
 }
 
-h1 { color: #d63384; margin-bottom: 20px; }
-p { color: #555; line-height: 1.6; }
+/* The SQUARE COLLAGE style for 4 photos */
+.collage-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 8px;
+    padding: 5px;
+}
 
-/* The button area */
+.collage-grid .journey-img {
+    width: 100%;
+    aspect-ratio: 1 / 1; 
+    object-fit: cover;
+    border: 3px solid white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* 4. BUTTONS */
 .btn-group {
     display: flex;
-    flex-direction: row; /* Keeps buttons side-by-side */
-    justify-content: center;
-    align-items: center;
     gap: 15px;
-    margin-top: 40px;
+    margin-top: 20px;
     width: 100%;
-    min-height: 250px; /* Space for the button to grow upwards too */
+    justify-content: center;
 }
 
 .btn {
@@ -44,24 +64,318 @@ p { color: #555; line-height: 1.6; }
     cursor: pointer;
     font-size: 1.1rem;
     font-weight: bold;
-    transition: transform 0.3s ease, margin 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
+/* Navigation Gray Buttons */
+button[onclick*="unlockSite"], 
+button[onclick*="showPage"] {
+    background-color: #eeeeee; 
+    color: #444444;
+    border: 1px solid #dcdcdc;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+button[onclick*="showPage"]:hover {
+    background-color: #e2e2e2;
+    transform: translateY(-2px);
+}
+
+/* 5. ANIMATIONS & HEARTS */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.heart, .falling-photo {
+    position: fixed;
+    z-index: -2;
+    pointer-events: none;
+    animation: fallDown linear forwards;
+}
+
+@keyframes fallDown {
+    from { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+    to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+
+/* Typography */
+h1 { color: #d63384; margin-bottom: 10px; }
+p { color: #555; line-height: 1.6; margin-bottom: 20px; }
+
+/* This turns the tilted square into a heart shape */
+.heart::before,
+.heart::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: inherit; /* Matches the heart color */
+    border-radius: 50%;
+}
+
+.heart::before { top: -50%; left: 0; }
+.heart::after { left: 50%; top: 0; }
+
+/* Targets ONLY the first page to keep it tight */
+#welcome-page {
+    min-height: auto; 
+    margin-top: 15vh; /* Pushes it down slightly from the top */
+}
+
+.photo-placeholder:not(.collage-grid) .journey-img {
+    width: 100%;
+    max-height: 280px; /* Decrease this number to make the photo (and box) shorter */
+    height: auto;
+    object-fit: cover; /* Change 'contain' to 'cover' if you want it to fill a specific square */
+    border: 4px solid white;
+    border-radius: 10px;
+}
+
+.heart {
+    z-index: -1; /* Hearts in front of photos */
+}
+
+.falling-photo {
+    z-index: -2; /* Photos in the very back */
+}
+
+.heart {
+    position: fixed;
+    width: 15px;         /* MUST HAVE: This is the base size */
+    height: 15px;        /* MUST HAVE: This is the base size */
+    background-color: #ff4d6d; /* Give it a default color just in case */
+    transform: rotate(-45deg);
+    z-index: -1;         /* Stays behind the white box */
+    pointer-events: none;
+    animation: fallDown linear forwards;
+}
+
+/* The Green YES Button */
 .yes-btn {
-    background-color: #4caf50;
-    color: white;
+    background-color: #4caf50 !important; /* Green */
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+/* The Red NO Button */
+.no-btn {
+    background-color: #f44336 !important; /* Red */
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+}
+
+/* Make sure they look like buttons on hover */
+.yes-btn:hover {
+    background-color: #45a049 !important;
+    transform: scale(1.05);
+}
+
+.no-btn:hover {
+    background-color: #da190b !important;
+}
+
+/* 1. Make the container wider for the collage pages */
+.container {
+    max-width: 500px; /* Increased from 400px to give it more "room" */
+    padding: 35px;    /* A bit more breathing room inside */
+    /* ... keep your other settings ... */
+}
+
+/* 2. Make the collage photos larger */
+.collage-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;        /* Increased gap for a cleaner look */
+    margin: 25px 0;   /* More space above and below the grid */
+}
+
+/* This adds the "Fade Out" effect at the bottom of the card */
+#main-content {
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+    
+    /* We add extra padding at the bottom so the text/button 
+       is what gets caught in the fade */
+    padding-bottom: 80px; 
+}
+
+body {
+    overflow-y: scroll; /* Forces the scrollbar to be active */
+    height: auto;
+    /* ... keep your background settings ... */
+}
+
+/* 1. THE MAIN STYLE (For Journey Pages) */
+.container {
+    background: white;
+    padding: 25px;
+    padding-bottom: 120px; 
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: center;
+    
+    /* The "Sweet Spot" Size */
+    width: 85%;
+    max-width: 420px;
+    margin: 40px auto;
+    min-height: 105vh; /* Enough to scroll, but not a skyscraper */
+    
+    /* The Intentional Fast Fade */
+    mask-image: linear-gradient(to bottom, black 0%, black 90%, transparent 99%);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 90%, transparent 99%);
+
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+    animation: fadeIn 0.8s ease-in, float 3s ease-in-out infinite;
+}
+
+/* 2. THE LOCK SCREEN FIX (Forces it to be short and clean) */
+/* Putting this at the bottom with !important makes it invincible */
+#lock-screen.container {
+    min-height: auto !important; 
+    height: auto !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+    margin-top: 20vh !important; /* Pushes it to the center of the screen */
+    padding-bottom: 25px !important; /* Removes that giant 120px gap */
+}
+
+.container {
+    /* ... keep your other settings ... */
+
+    /* 1. The Fade Logic */
+    /* We push the solid black to 95% so the fade is very short */
+    mask-image: linear-gradient(to bottom, 
+        black 0%, 
+        black 95%,      /* Stay visible until the very bottom */
+        transparent 100% /* Fade out completely in the last 5% */
+    );
+    -webkit-mask-image: linear-gradient(to bottom, 
+        black 0%, 
+        black 95%, 
+        transparent 100%
+    );
+
+    /* 2. The Spacing */
+    /* Adjust this number to move the button up or down within the fade */
+    padding-bottom: 80px; 
+}
+
+.story-item {
+    width: 100%;
+    margin-bottom: 40px; /* Space between each photo/text pair */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.story-img {
+    width: 90%;          /* Makes the photo slightly smaller than the box */
+    max-height: 250px;   /* Keeps them from getting too tall */
+    object-fit: cover;   /* Ensures the photo doesn't look stretched */
+    border-radius: 10px;
+    border: 5px solid #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.story-text {
+    margin-top: 15px;
+    font-style: italic;
+    color: #555;
+    padding: 0 10px;
+}
+
+/* Specifically target the title on Page 3 */
+#page3 h2 {
+    color: #d63284 !important; /* Use your favorite pink/red hex code */
+    font-family: arial; /* If you want it extra fancy */
+    margin-bottom: 20px;
+}
+
+/* Look for something that looks like this in your file */
+.valentine-title { 
+    font-family: arial;
+    color: #d63284;
+    font-size: 3rem;
+}
+
+.button-group {
+    position: relative;
+    z-index: 1; /* Lower than the container's 10 if they are separate, or just relative to stay inside */
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Ensure the buttons themselves don't override the stack */
+.btn {
+    position: relative;
+    z-index: 5; 
+}
+
+/* VERY IMPORTANT: Check the Container */
+.container {
+    /* ... your other code ... */
+    overflow: hidden; /* This keeps everything INSIDE the rounded corners */
+    position: relative;
     z-index: 10;
 }
 
-.no-btn {
-    background-color: #f44336;
-    color: white;
-    z-index: 5;
+#page4.container {
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+    min-height: auto !important; /* Makes it a normal-sized card again */
+    overflow: visible !important; /* This is the secret for the buttons! */
+    padding-bottom: 40px !important; /* Brings the buttons back into view */
 }
 
-.journey-img {
+#page4 {
+    overflow: visible !important; /* Allows buttons to "pop" outside if they grow */
+}
+
+/* If your "No" button is moving around, make sure it has absolute positioning 
+   relative to the container, NOT the whole screen. */
+.button-group {
+    position: relative; 
+    height: 100px; /* Gives the buttons a "playground" to move in */
     width: 100%;
-    max-width: 300px;
-    border-radius: 10px;
-    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#yesBtn {
+    transition: all 0.3s ease; /* Makes the growth smooth */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap; /* Prevents the word "Yes" from breaking into two lines */
+    overflow: visible;   /* Lets the text breathe */
+}
+
+/* If you are using JavaScript to grow the button, 
+   make sure you are also increasing the font size! */
+   
+   #musicToggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    border: 2px solid #ff4d6d;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    z-index: 1000;
+    cursor: pointer;
 }
